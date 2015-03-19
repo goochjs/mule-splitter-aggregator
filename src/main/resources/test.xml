@@ -22,7 +22,7 @@
 	
 	<itm:Item sequence="2" action="create">
 		<itm:Thing type="something">
-			<itm:Description>A different doohinky</itm:Description>
+			<itm:Description>A doohinky</itm:Description>
 		</itm:Thing>
 	</itm:Item>
 	
