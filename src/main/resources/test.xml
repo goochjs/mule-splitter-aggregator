@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<itm:ItemList
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:itm="http://schemas.goochjs.org/item-v1"
+		xsi:schemaLocation="http://schemas.goochjs.org/item-v1 item-v1.xsd">
+		
+	<itm:Item sequence="1" action="create">
+		<itm:Thing type="something">
+			<itm:Description>Something</itm:Description>
+		</itm:Thing>
+		
+		<itm:Thing type="anything">
+			<itm:Description>Something else</itm:Description>
+		</itm:Thing>
+	</itm:Item>
+	
+	<itm:Item sequence="2" action="update">
+		<itm:Thing type="anything">
+			<itm:Description>A wotsit</itm:Description>
+		</itm:Thing>
+	</itm:Item>
+	
+	<itm:Item sequence="2" action="create">
+		<itm:Thing type="something">
+			<itm:Description>A different doohinky</itm:Description>
+		</itm:Thing>
+	</itm:Item>
+	
+	<itm:Item sequence="3" action="delete">
+		<itm:Thing type="something">
+			<itm:Description>A different doohinky</itm:Description>
+		</itm:Thing>
+	</itm:Item>
+</itm:ItemList>
