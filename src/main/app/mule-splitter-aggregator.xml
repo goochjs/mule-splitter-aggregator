@@ -20,20 +20,40 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
     <jms:activemq-connector name="Active_MQ" specification="1.1" brokerURL="tcp://localhost:61616" validateConnections="true" doc:name="Active MQ"/>
         
         <flow name="mule-splitter-aggregatorFlow">
-    	    <http:listener config-ref="splitter-endpoint" path="/" allowedMethods="post" doc:name="HTTP"/>
-        <logger message="#[payload]" level="INFO" category="pre-split" doc:name="Pre-split logger"/>
+    	    <http:listener config-ref="splitter-endpoint" path="/" allowedMethods="post" doc:name="HTTP">
+            <http:response-builder statusCode="#[flowVars['statusCode']]" reasonPhrase="#[flowVars['reason']]"/>
+        </http:listener>
         	<splitter expression="#[xpath3('/itm:ItemList/itm:Item', payload, 'NODESET')]" doc:name="Splitter"/>
-        <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
         <logger message="#[payload]" level="INFO" doc:name="Post-split logger" category="post-split"/>
-        <jms:outbound-endpoint exchange-pattern="request-response" queue="item-processor" connector-ref="Active_MQ" mimeType="text/xml" doc:name="JMS request-response"/>
+        <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+        <choice doc:name="Route by action">
+            <when expression="#[xpath3('/itm:Item/attribute::action', payload, 'STRING') ==&quot;create&quot;]">
+                <jms:outbound-endpoint exchange-pattern="request-response" queue="item-create" connector-ref="Active_MQ" mimeType="text/xml" doc:name="item-create"/>
+            </when>
+            <when expression="#[xpath3('/itm:Item/attribute::action', payload, 'STRING') ==&quot;update&quot;]">
+                <jms:outbound-endpoint exchange-pattern="request-response" queue="item-update" connector-ref="Active_MQ" doc:name="item-update"/>
+            </when>
+            <when expression="#[xpath3('/itm:Item/attribute::action', payload, 'STRING') ==&quot;delete&quot;]">
+                <jms:outbound-endpoint exchange-pattern="request-response" queue="item-delete" connector-ref="Active_MQ" doc:name="item-delete"/>
+            </when>
+            <otherwise>
+                <component class="org.goochjs.muleSplitterAggregator.ThrowException" doc:name="Throw exception"/>
+            </otherwise>
+        </choice>
         <collection-aggregator timeout="5000" failOnTimeout="true" doc:name="Collection Aggregator"/>
         <custom-transformer mimeType="text/plain" class="org.mule.transformers.CollectionToXML" doc:name="MessageCollection to XML"/>
         <string-to-byte-array-transformer doc:name="String to Byte Array"/>
-        <logger level="INFO" category="post-aggregation" doc:name="Post-aggregation logger" message="#[payload]"/>
+        <choice-exception-strategy doc:name="mule-splitter-aggregatorChoice_Exception_Strategy">
+            <catch-exception-strategy when="#[exception.causedBy(org.goochjs.muleSplitterAggregator.MuleSplitterAggregatorException)]" doc:name="Catch invalid action">
+                <logger message="Exception caught: invalid action ( #[xpath3('/itm:Item/attribute::action', payload, 'STRING')] )" level="INFO" doc:name="Logger"/>
+                <set-variable variableName="statusCode" value="400" doc:name="Set statusCode 400"/>
+                <set-variable variableName="reason" value="Invalid /Item/@action" doc:name="Set reason"/>
+                <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+            </catch-exception-strategy>
+            <catch-exception-strategy when="#[exception.causedBy(org.xml.sax.SAXParseException)]" doc:name="Catch XML parse exception">
+                <set-variable variableName="statusCode" value="400" doc:name="Set statusCode 400"/>
+                <set-variable variableName="reason" value="Invalid XML request payload" doc:name="Set reason"/>
+            </catch-exception-strategy>
+        </choice-exception-strategy>
         </flow>
-    <flow name="JMS-flow">
-        <jms:inbound-endpoint queue="item-processor" connector-ref="Active_MQ" doc:name="JMS"/>
-        <logger level="INFO" category="JMS-sub-flow" doc:name="JMS flow logger" message="#[payload]"/>
-        <jms:outbound-endpoint queue="#[message.outboundProperties.JMSReplyTo]" connector-ref="Active_MQ" doc:name="JMS"/>
-    </flow>
     </mule>
