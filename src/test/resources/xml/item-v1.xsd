@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+	xmlns="http://schemas.goochjs.org/item-v1"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:itm="http://schemas.goochjs.org/item-v1"
+	targetNamespace="http://schemas.goochjs.org/item-v1"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Item">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Thing" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Description" type="xs:string"/>
+						</xs:sequence>
+						<xs:attribute name="type" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="anything"/>
+									<xs:enumeration value="something"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="sequence" type="xs:integer" use="optional"/>
+			<xs:attribute name="action" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="create"/>
+						<xs:enumeration value="read"/>
+						<xs:enumeration value="update"/>
+						<xs:enumeration value="delete"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ItemList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Item" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

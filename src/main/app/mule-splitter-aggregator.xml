@@ -21,11 +21,19 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
         
         <flow name="mule-splitter-aggregatorFlow">
     	    <http:listener config-ref="splitter-endpoint" path="/" allowedMethods="post" doc:name="HTTP"/>
+        <logger message="#[payload]" level="INFO" category="pre-split" doc:name="Pre-split logger"/>
         	<splitter expression="#[xpath3('/itm:ItemList/itm:Item', payload, 'NODESET')]" doc:name="Splitter"/>
-        <mulexml:dom-to-xml-transformer mimeType="text/xml" outputEncoding="UTF-8" doc:name="DOM to XML"/>
-        <logger message="#[message.payload]" level="INFO" doc:name="Post-split logger"/>
-        <jms:outbound-endpoint queue="splitter-output" connector-ref="Active_MQ" doc:name="JMS"/>
-        <message-chunk-aggregator failOnTimeout="true" doc:name="Message Chunk Aggregator"/>
-        <logger level="INFO" doc:name="Output logger"/>
+        <mulexml:dom-to-xml-transformer doc:name="DOM to XML"/>
+        <logger message="#[payload]" level="INFO" doc:name="Post-split logger" category="post-split"/>
+        <jms:outbound-endpoint exchange-pattern="request-response" queue="item-processor" connector-ref="Active_MQ" mimeType="text/xml" doc:name="JMS request-response"/>
+        <collection-aggregator timeout="5000" failOnTimeout="true" doc:name="Collection Aggregator"/>
+        <custom-transformer mimeType="text/plain" class="org.mule.transformers.CollectionToXML" doc:name="MessageCollection to XML"/>
+        <string-to-byte-array-transformer doc:name="String to Byte Array"/>
+        <logger level="INFO" category="post-aggregation" doc:name="Post-aggregation logger" message="#[payload]"/>
         </flow>
+    <flow name="JMS-flow">
+        <jms:inbound-endpoint queue="item-processor" connector-ref="Active_MQ" doc:name="JMS"/>
+        <logger level="INFO" category="JMS-sub-flow" doc:name="JMS flow logger" message="#[payload]"/>
+        <jms:outbound-endpoint queue="#[message.outboundProperties.JMSReplyTo]" connector-ref="Active_MQ" doc:name="JMS"/>
+    </flow>
     </mule>

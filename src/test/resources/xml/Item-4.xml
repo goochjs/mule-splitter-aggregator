@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<itm:Item xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:itm="http://schemas.goochjs.org/item-v1" xsi:schemaLocation="http://schemas.goochjs.org/item-v1 item-v1.xsd" sequence="3" action="delete">
+	<itm:Thing type="something">
+		<itm:Description>A different doohinky</itm:Description>
+	</itm:Thing>
+</itm:Item>
