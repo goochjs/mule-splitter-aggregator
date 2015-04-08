@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
  * document's root was called.
  * 
  */
-public class xmlMerger {
+public class XmlMerger {
 	private Document doc = null;
 	private Element rootElement = null;
 	
@@ -32,7 +32,7 @@ public class xmlMerger {
 	 * 
 	 * @param rootElementName
 	 */
-	public xmlMerger(String rootElementName) {
+	public XmlMerger(String rootElementName) {
 		initialise();
 
 		rootElement = doc.createElement(rootElementName);
@@ -48,7 +48,7 @@ public class xmlMerger {
 	 * @param rootNamespacePrefix
 	 * @param rootNamespace
 	 */
-	public xmlMerger(String rootElementName, String rootNamespacePrefix, String rootNamespace) {
+	public XmlMerger(String rootElementName, String rootNamespacePrefix, String rootNamespace) {
 		initialise();
 		
 		rootElement = doc.createElementNS(rootNamespace, rootElementName);

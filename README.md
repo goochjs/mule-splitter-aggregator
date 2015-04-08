@@ -45,7 +45,7 @@ Mule then aggregates the messages once more, under a new `ItemList` element befo
 
 Under the `src\test\resources\Postman` folder is a [Postman][Postman] collection, containing some test data.
 
-More Mule stuff is on my [blog][blog].
+More Mule-getting-started stuff is on my [blog][blog].
 
 
 [ActiveMQ]: http://activemq.apache.org/

@@ -52,7 +52,7 @@ public class testXML {
 	
 	@Test
 	public void testInstantiation() {
-		xmlMerger merger = new xmlMerger("root");
+		XmlMerger merger = new XmlMerger("root");
 		
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root/>", merger.toString());
 	}
@@ -60,7 +60,7 @@ public class testXML {
 	
 	@Test
 	public void testMerge() throws TransformerException {
-		xmlMerger merger = new xmlMerger("ItemList", "itm", "http://schemas.goochjs.org/item-v1");
+		XmlMerger merger = new XmlMerger("ItemList", "itm", "http://schemas.goochjs.org/item-v1");
 
 		String xmlString = fileToString("src/test/resources/xml/Item-1.xml");
 		merger.appendXml(xmlString);
